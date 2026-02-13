@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Room Energy Automation</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- jsPDF CDN for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login/Register Section -->
+    <div id="auth-section" class="container">
+        <div class="auth-container">
+            <h1>🏠 Smart Energy</h1>
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="showAuth('login')">Login</button>
+                <button class="tab-btn" onclick="showAuth('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form">
+                <h2>Welcome Back!</h2>
+                <input type="text" id="login-username" placeholder="Username">
+                <input type="password" id="login-password" placeholder="Password">
+                <button class="btn primary" onclick="login()">Login</button>
+                <p id="login-error" class="error-msg"></p>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="register-form" class="auth-form hidden">
+                <h2>Create Account!</h2>
+                <input type="text" id="register-username" placeholder="Username">
+                <input type="password" id="register-password" placeholder="Password">
+                <button class="btn primary" onclick="register()">Register</button>
+                <p id="register-error" class="error-msg"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" class="hidden">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <h1>⚡ Smart Energy Dashboard</h1>
+                <div class="header-actions">
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                    <!-- User Info -->
+                    <span id="user-greeting">Hello, User!</span>
+                    <!-- Logout Button -->
+                    <button class="btn logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Room Selection -->
+            <div class="room-selector">
+                <label for="room-select">📍 Select Room:</label>
+                <select id="room-select" onchange="changeRoom()">
+                    <option value="living-room">Living Room</option>
+                    <option value="bedroom">Bedroom</option>
+                    <option value="kitchen">Kitchen</option>
+                    <option value="office">Office</option>
+                </select>
+            </div>
+
+            <!-- Energy Stats -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Total Power</h3>
+                    <p class="stat-value"><span id="total-power">0</span> W</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Energy Usage</h3>
+                    <p class="stat-value"><span id="energy-usage">0</span> Wh</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Devices</h3>
+                    <p class="stat-value"><span id="active-devices">0</span></p>
+                </div>
+                <div class="stat-card warning" id="warning-card" style="display: none;">
+                    <h3>⚠️ Warning</h3>
+                    <p id="warning-msg">Device running > 2 hours!</p>
+                </div>
+            </div>
+
+            <!-- AI Prediction -->
+            <div class="prediction-container" id="prediction-container" style="display: none;">
+                <div class="prediction-box">
+                    <h3>🤖 AI Prediction</h3>
+                    <p id="prediction-msg">Based on your usage patterns...</p>
+                </div>
+            </div>
+
+            <!-- Devices Grid -->
+            <div class="devices-grid" id="devices-container">
+                <!-- Light -->
+                <div class="device-card" id="device-light">
+                    <div class="device-icon">💡</div>
+                    <h3>Light</h3>
+                    <p class="device-watt">60W</p>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-light" onchange="toggleDevice('light')">
+                        <span class="slider"></span>
+                    </label>
+                    <p class="device-status" id="status-light">OFF</p>
+                    <p class="device-timer" id="timer-light">0 min</p>
+                </div>
+
+                <!-- Fan -->
+                <div class="device-card" id="device-fan">
+                    <div class="device-icon">🌀</div>
+                    <h3>Fan</h3>
+                    <p class="device-watt">75W</p>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-fan" onchange="toggleDevice('fan')">
+                        <span class="slider"></span>
+                    </label>
+                    <p class="device-status" id="status-fan">OFF</p>
+                    <p class="device-timer" id="timer-fan">0 min</p>
+                </div>
+
+                <!-- AC -->
+                <div class="device-card" id="device-ac">
+                    <div class="device-icon">❄️</div>
+                    <h3>AC</h3>
+                    <p class="device-watt">1200W</p>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-ac" onchange="toggleDevice('ac')">
+                        <span class="slider"></span>
+                    </label>
+                    <p class="device-status" id="status-ac">OFF</p>
+                    <p class="device-timer" id="timer-ac">0 min</p>
+                </div>
+
+                <!-- Computer -->
+                <div class="device-card" id="device-computer">
+                    <div class="device-icon">💻</div>
+                    <h3>Computer</h3>
+                    <p class="device-watt">200W</p>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-computer" onchange="toggleDevice('computer')">
+                        <span class="slider"></span>
+                    </label>
+                    <p class="device-status" id="status-computer">OFF</p>
+                    <p class="device-timer" id="timer-computer">0 min</p>
+                </div>
+
+                <!-- Charger -->
+                <div class="device-card" id="device-charger">
+                    <div class="device-icon">🔌</div>
+                    <h3>Charger</h3>
+                    <p class="device-watt">25W</p>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-charger" onchange="toggleDevice('charger')">
+                        <span class="slider"></span>
+                    </label>
+                    <p class="device-status" id="status-charger">OFF</p>
+                    <p class="device-timer" id="timer-charger">0 min</p>
+                </div>
+            </div>
+
+            <!-- PDF Export Button -->
+            <div class="export-section">
+                <button class="btn export-btn" onclick="exportPDF()">📄 Download PDF Report</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
